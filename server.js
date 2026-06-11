@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -268,7 +268,12 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`🐔 Server Juragan Ayam berjalan di http://localhost:${PORT}`);
-    console.log(`📦 API tersedia di http://localhost:${PORT}/api/products`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🐔 Server Juragan Ayam berjalan di http://localhost:${PORT}`);
+        console.log(`📦 API tersedia di http://localhost:${PORT}/api/products`);
+    });
+}
+
+// Export for Vercel
+module.exports = app;

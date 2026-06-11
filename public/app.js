@@ -13,7 +13,9 @@ const sounds = {
 };
 
 // API Base URL
-const API_URL = 'http://localhost:3000/api';
+const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000/api' 
+    : '/api';
 
 // DOM Elements
 const productsGrid = document.getElementById('productsGrid');
