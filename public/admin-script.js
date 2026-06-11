@@ -1,3 +1,40 @@
+// Check if user is logged in
+function checkAuth() {
+    const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+    const loginTime = sessionStorage.getItem('loginTime');
+    
+    // Check if not logged in
+    if (isLoggedIn !== 'true') {
+        window.location.href = 'login.html';
+        return false;
+    }
+    
+    // Check if session expired (24 hours)
+    if (loginTime) {
+        const currentTime = new Date().getTime();
+        const timeDiff = currentTime - parseInt(loginTime);
+        const hoursDiff = timeDiff / (1000 * 60 * 60);
+        
+        if (hoursDiff > 24) {
+            // Session expired
+            sessionStorage.clear();
+            alert('Sesi login telah habis. Silakan login kembali.');
+            window.location.href = 'login.html';
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// Logout function
+function logout() {
+    if (confirm('Yakin mau logout? 👋')) {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+}
+
 // Global Variables
 let products = [];
 let orders = [];
@@ -7,6 +44,11 @@ const API_URL = 'http://localhost:3000/api';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    // Check authentication first
+    if (!checkAuth()) {
+        return;
+    }
+    
     loadData();
     setInterval(loadData, 30000); // Refresh every 30 seconds
 });
