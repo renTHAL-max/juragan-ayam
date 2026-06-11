@@ -17,25 +17,45 @@ const API_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:3000/api' 
     : '/api';
 
-// DOM Elements
-const productsGrid = document.getElementById('productsGrid');
-const cartBtn = document.getElementById('cartBtn');
-const cartModal = document.getElementById('cartModal');
-const checkoutModal = document.getElementById('checkoutModal');
-const closeCartBtn = document.getElementById('closeCartBtn');
-const closeCheckoutBtn = document.getElementById('closeCheckoutBtn');
-const cartCount = document.getElementById('cartCount');
-const cartItems = document.getElementById('cartItems');
-const cartTotal = document.getElementById('cartTotal');
-const checkoutBtn = document.getElementById('checkoutBtn');
-const checkoutForm = document.getElementById('checkoutForm');
-const categoryBtns = document.querySelectorAll('.category-btn');
+// DOM Elements - will be initialized after DOM loads
+let productsGrid;
+let cartBtn;
+let cartModal;
+let checkoutModal;
+let closeCartBtn;
+let closeCheckoutBtn;
+let cartCount;
+let cartItems;
+let cartTotal;
+let checkoutBtn;
+let checkoutForm;
+let categoryBtns;
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
     console.log('App initializing...');
     console.log('API URL:', API_URL);
+    
+    // Initialize DOM elements
+    productsGrid = document.getElementById('productsGrid');
+    cartBtn = document.getElementById('cartBtn');
+    cartModal = document.getElementById('cartModal');
+    checkoutModal = document.getElementById('checkoutModal');
+    closeCartBtn = document.getElementById('closeCartBtn');
+    closeCheckoutBtn = document.getElementById('closeCheckoutBtn');
+    cartCount = document.getElementById('cartCount');
+    cartItems = document.getElementById('cartItems');
+    cartTotal = document.getElementById('cartTotal');
+    checkoutBtn = document.getElementById('checkoutBtn');
+    checkoutForm = document.getElementById('checkoutForm');
+    categoryBtns = document.querySelectorAll('.category-btn');
+    
     console.log('Products Grid:', productsGrid);
+    
+    if (!productsGrid) {
+        console.error('ERROR: productsGrid element not found! Check HTML.');
+        return;
+    }
     
     loadProducts();
     loadCart();
