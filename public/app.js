@@ -605,6 +605,13 @@ function chickenRain() {
 
 // 3. LIVE STATS COUNTER
 function initLiveStats() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Don't show live stats on mobile to avoid clutter
+        return;
+    }
+    
     const statsDiv = document.createElement('div');
     statsDiv.id = 'live-stats';
     statsDiv.style.cssText = `
@@ -736,6 +743,13 @@ function showLoadingChicken() {
 
 // 6. PROMOTIONAL ADS - Iklan Menarik Pop-up
 function showPromotionalAd() {
+    const isMobile = window.innerWidth <= 768;
+    
+    // On mobile, show ads less frequently
+    if (isMobile && Math.random() > 0.5) {
+        return; // 50% chance to skip on mobile
+    }
+    
     const promos = [
         {
             title: '🔥 FLASH SALE!',
@@ -796,85 +810,83 @@ function showPromotionalAd() {
         position: fixed;
         left: ${isMobile ? '50%' : '20px'};
         top: ${isMobile ? 'auto' : '150px'};
-        bottom: ${isMobile ? '80px' : 'auto'};
+        bottom: ${isMobile ? '70px' : 'auto'};
         ${isMobile ? 'transform: translateX(-50%);' : ''}
         background: ${promo.color};
-        padding: ${isMobile ? '1rem' : '1.5rem'};
-        border-radius: ${isMobile ? '15px' : '20px'};
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        padding: ${isMobile ? '0.8rem' : '1.5rem'};
+        border-radius: ${isMobile ? '12px' : '20px'};
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         z-index: 1000;
-        animation: ${isMobile ? 'bounceIn 0.5s' : 'slideInLeft 0.5s, bounce 2s ease-in-out infinite'};
-        max-width: ${isMobile ? '85%' : '350px'};
-        width: ${isMobile ? '85%' : 'auto'};
+        animation: ${isMobile ? 'bounceIn 0.5s' : 'slideInLeft 0.5s'};
+        max-width: ${isMobile ? '280px' : '350px'};
+        width: ${isMobile ? '280px' : 'auto'};
         color: white;
         cursor: pointer;
         transition: all 0.3s;
-        border: 3px solid rgba(255,255,255,0.3);
+        border: 2px solid rgba(255,255,255,0.3);
     `;
     
     ad.innerHTML = `
         <div style="position: relative;">
             <button onclick="event.stopPropagation(); this.closest('div').parentElement.remove()" style="
                 position: absolute;
-                top: -10px;
-                right: -10px;
-                background: rgba(0,0,0,0.5);
+                top: -8px;
+                right: -8px;
+                background: rgba(0,0,0,0.7);
                 color: white;
                 border: none;
-                width: ${isMobile ? '28px' : '30px'};
-                height: ${isMobile ? '28px' : '30px'};
+                width: ${isMobile ? '24px' : '28px'};
+                height: ${isMobile ? '24px' : '28px'};
                 border-radius: 50%;
                 cursor: pointer;
-                font-size: ${isMobile ? '1rem' : '1.2rem'};
+                font-size: ${isMobile ? '0.9rem' : '1rem'};
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 transition: all 0.3s;
                 z-index: 10;
-            " onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0)'">×</button>
+            ">×</button>
             
             <div style="text-align: center;">
                 <div style="
-                    font-size: ${isMobile ? '3rem' : '5rem'};
-                    margin-bottom: ${isMobile ? '0.3rem' : '0.5rem'};
-                    animation: rotateScale 2s infinite;
-                    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+                    font-size: ${isMobile ? '2.5rem' : '5rem'};
+                    margin-bottom: ${isMobile ? '0.2rem' : '0.5rem'};
+                    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
                 ">${promo.emoji}</div>
                 
                 <h3 style="
-                    font-size: ${isMobile ? '1.1rem' : '1.5rem'};
-                    margin-bottom: ${isMobile ? '0.3rem' : '0.5rem'};
-                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-                    animation: glow 2s ease-in-out infinite;
+                    font-size: ${isMobile ? '0.95rem' : '1.5rem'};
+                    margin-bottom: ${isMobile ? '0.2rem' : '0.5rem'};
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
                 ">${promo.title}</h3>
                 
                 <div style="
-                    font-size: ${isMobile ? '1.3rem' : '1.8rem'};
+                    font-size: ${isMobile ? '1.1rem' : '1.8rem'};
                     font-weight: bold;
                     margin-bottom: ${isMobile ? '0.2rem' : '0.3rem'};
-                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
                 ">${promo.message}</div>
                 
                 <p style="
-                    font-size: ${isMobile ? '0.8rem' : '0.95rem'};
+                    font-size: ${isMobile ? '0.7rem' : '0.95rem'};
                     opacity: 0.95;
-                    margin-bottom: ${isMobile ? '0.8rem' : '1rem'};
+                    margin-bottom: ${isMobile ? '0.6rem' : '1rem'};
+                    line-height: 1.3;
                 ">${promo.subtitle}</p>
                 
                 <button style="
                     background: white;
                     color: #2d3436;
                     border: none;
-                    padding: ${isMobile ? '0.6rem 1.5rem' : '0.8rem 2rem'};
+                    padding: ${isMobile ? '0.5rem 1rem' : '0.8rem 2rem'};
                     border-radius: 50px;
                     font-weight: bold;
-                    font-size: ${isMobile ? '0.85rem' : '1rem'};
+                    font-size: ${isMobile ? '0.75rem' : '1rem'};
                     cursor: pointer;
                     transition: all 0.3s;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                    animation: pulse 2s infinite;
-                    width: ${isMobile ? '100%' : 'auto'};
-                " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${promo.action} 🚀</button>
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                    width: 100%;
+                ">${promo.action} 🚀</button>
             </div>
         </div>
     `;
@@ -993,6 +1005,13 @@ function initProductHoverEffects() {
 
 // 11. PROMO BANNER ANIMATED
 function initPromoBanner() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Simpler banner for mobile
+        return; // Skip promo banner on mobile to reduce clutter
+    }
+    
     const banner = document.createElement('div');
     banner.style.cssText = `
         position: fixed;
@@ -1066,6 +1085,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // SALES TICKER - Running Text Penjualan
 function initSalesTicker() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Don't show sales ticker on mobile
+        return;
+    }
+    
     const ticker = document.createElement('div');
     ticker.id = 'sales-ticker';
     ticker.style.cssText = `
