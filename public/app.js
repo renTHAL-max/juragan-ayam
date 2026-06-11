@@ -47,93 +47,70 @@ document.addEventListener('DOMContentLoaded', () => {
     checkoutForm = document.getElementById('checkoutForm');
     categoryBtns = document.querySelectorAll('.category-btn');
     
-    // Show welcome chicken with click to play sound
-    showWelcomeChicken();
+    // Auto play chicken sound
+    autoPlayChickenSound();
     
     loadProducts();
     loadCart();
     setupEventListeners();
 });
 
-// Show Welcome Chicken Animation with Sound
-function showWelcomeChicken() {
-    const welcomeOverlay = document.createElement('div');
-    welcomeOverlay.style.cssText = `
+// Auto Play Chicken Sound with Animation
+function autoPlayChickenSound() {
+    // Create chicken animation overlay
+    const chickenOverlay = document.createElement('div');
+    chickenOverlay.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.95), rgba(247, 147, 30, 0.95));
         z-index: 10000;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         animation: fadeIn 0.3s;
-        cursor: pointer;
     `;
     
-    welcomeOverlay.innerHTML = `
-        <div style="text-align: center; animation: bounceIn 0.5s;">
-            <div style="font-size: 10rem; margin-bottom: 1rem; animation: wiggle 1s infinite;">🐓</div>
-            <h2 style="color: white; font-size: 3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 1rem;">
-                Selamat Datang di Juragan Ayam!
+    chickenOverlay.innerHTML = `
+        <div style="text-align: center;">
+            <div style="font-size: 12rem; margin-bottom: 1rem; animation: chickenBounce 0.8s ease-out;">🐓</div>
+            <h1 style="color: white; font-size: 4rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); margin-bottom: 0.5rem; animation: slideInUp 0.5s;">
+                KUKURUYUUUK!
+            </h1>
+            <h2 style="color: white; font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); animation: slideInUp 0.7s;">
+                Selamat Datang di Juragan Ayam! 🍗
             </h2>
-            <p style="color: white; font-size: 1.5rem; margin-bottom: 2rem;">
-                Klik untuk dengar kukuruyuk! 🔊
-            </p>
-            <button style="
-                background: linear-gradient(135deg, #ff6b35, #f7931e);
-                color: white;
-                border: none;
-                padding: 1rem 3rem;
-                font-size: 1.3rem;
-                border-radius: 50px;
-                cursor: pointer;
-                font-weight: bold;
-                animation: pulse 1s infinite;
-                box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
-            ">
-                🐓 KUKURUYUUUK! 🐓
-            </button>
         </div>
     `;
     
-    document.body.appendChild(welcomeOverlay);
+    document.body.appendChild(chickenOverlay);
     
-    // Create audio element with rooster sound URL
-    const roosterAudio = new Audio('https://www.soundjay.com/misc/sounds/rooster-crowing-01.mp3');
-    roosterAudio.volume = 0.5;
+    // Create and play rooster sound using Web Speech API (works better for autoplay)
+    const speakKukuruyuk = () => {
+        const utterance = new SpeechSynthesisUtterance('Kukuruyuk! Kukuruyuk! Kukuruyuk!');
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.7;
+        utterance.pitch = 1.8;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    };
     
-    // Alternative: use a different rooster sound
-    const roosterAudio2 = new Audio();
-    roosterAudio2.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    // Try to play immediately
+    speakKukuruyuk();
     
-    welcomeOverlay.addEventListener('click', () => {
-        // Try to play rooster sound
-        roosterAudio.play().catch(() => {
-            // If failed, use text-to-speech as fallback
-            const utterance = new SpeechSynthesisUtterance('Kukuruyuk! Selamat datang di Juragan Ayam!');
-            utterance.lang = 'id-ID';
-            utterance.rate = 0.8;
-            utterance.pitch = 1.5;
-            window.speechSynthesis.speak(utterance);
-        });
-        
-        // Animate chicken
-        const chickenEmoji = welcomeOverlay.querySelector('div > div');
-        chickenEmoji.style.animation = 'chickenJump 0.5s ease-out 3';
-        
-        // Show confetti
+    // Also add confetti
+    setTimeout(() => {
         throwConfetti();
-        
-        // Remove overlay after animation
-        setTimeout(() => {
-            welcomeOverlay.style.animation = 'fadeOut 0.5s';
-            setTimeout(() => welcomeOverlay.remove(), 500);
-        }, 2000);
-    });
+    }, 500);
+    
+    // Remove overlay after 3 seconds
+    setTimeout(() => {
+        chickenOverlay.style.animation = 'fadeOut 0.5s';
+        setTimeout(() => chickenOverlay.remove(), 500);
+    }, 3000);
 }
 
 // Add CSS animations
@@ -147,19 +124,14 @@ style.textContent = `
         from { opacity: 1; }
         to { opacity: 0; }
     }
-    @keyframes bounceIn {
-        0% { transform: scale(0); opacity: 0; }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); opacity: 1; }
+    @keyframes chickenBounce {
+        0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+        50% { transform: scale(1.2) rotate(5deg); }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
-    @keyframes wiggle {
-        0%, 100% { transform: rotate(-5deg); }
-        50% { transform: rotate(5deg); }
-    }
-    @keyframes chickenJump {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        30% { transform: translateY(-50px) rotate(-10deg); }
-        70% { transform: translateY(-30px) rotate(10deg); }
+    @keyframes slideInUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 `;
 document.head.appendChild(style);
