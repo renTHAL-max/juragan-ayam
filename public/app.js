@@ -47,89 +47,119 @@ document.addEventListener('DOMContentLoaded', () => {
     checkoutForm = document.getElementById('checkoutForm');
     categoryBtns = document.querySelectorAll('.category-btn');
     
-    // Play chicken sound on page load
-    playChickenSound();
+    // Show welcome chicken with click to play sound
+    showWelcomeChicken();
     
     loadProducts();
     loadCart();
     setupEventListeners();
 });
 
-// Play Chicken "Kukuruyuk" Sound
-function playChickenSound() {
-    // Show chicken animation with sound
-    const chickenWelcome = document.createElement('div');
-    chickenWelcome.style.cssText = `
+// Show Welcome Chicken Animation with Sound
+function showWelcomeChicken() {
+    const welcomeOverlay = document.createElement('div');
+    welcomeOverlay.style.cssText = `
         position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 8rem;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
         z-index: 10000;
-        animation: chickenCrow 2s ease-out;
-        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s;
+        cursor: pointer;
     `;
-    chickenWelcome.textContent = '🐓';
-    document.body.appendChild(chickenWelcome);
     
-    // Play rooster sound using Web Audio API
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    welcomeOverlay.innerHTML = `
+        <div style="text-align: center; animation: bounceIn 0.5s;">
+            <div style="font-size: 10rem; margin-bottom: 1rem; animation: wiggle 1s infinite;">🐓</div>
+            <h2 style="color: white; font-size: 3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 1rem;">
+                Selamat Datang di Juragan Ayam!
+            </h2>
+            <p style="color: white; font-size: 1.5rem; margin-bottom: 2rem;">
+                Klik untuk dengar kukuruyuk! 🔊
+            </p>
+            <button style="
+                background: linear-gradient(135deg, #ff6b35, #f7931e);
+                color: white;
+                border: none;
+                padding: 1rem 3rem;
+                font-size: 1.3rem;
+                border-radius: 50px;
+                cursor: pointer;
+                font-weight: bold;
+                animation: pulse 1s infinite;
+                box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
+            ">
+                🐓 KUKURUYUUUK! 🐓
+            </button>
+        </div>
+    `;
     
-    // Create rooster crow sound
-    const playRoosterCrow = () => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+    document.body.appendChild(welcomeOverlay);
+    
+    // Create audio element with rooster sound URL
+    const roosterAudio = new Audio('https://www.soundjay.com/misc/sounds/rooster-crowing-01.mp3');
+    roosterAudio.volume = 0.5;
+    
+    // Alternative: use a different rooster sound
+    const roosterAudio2 = new Audio();
+    roosterAudio2.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    
+    welcomeOverlay.addEventListener('click', () => {
+        // Try to play rooster sound
+        roosterAudio.play().catch(() => {
+            // If failed, use text-to-speech as fallback
+            const utterance = new SpeechSynthesisUtterance('Kukuruyuk! Selamat datang di Juragan Ayam!');
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.8;
+            utterance.pitch = 1.5;
+            window.speechSynthesis.speak(utterance);
+        });
         
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        // Animate chicken
+        const chickenEmoji = welcomeOverlay.querySelector('div > div');
+        chickenEmoji.style.animation = 'chickenJump 0.5s ease-out 3';
         
-        // Rooster crow frequency pattern
-        oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
-        oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
-        oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.5);
-        oscillator.frequency.exponentialRampToValueAtTime(700, audioContext.currentTime + 0.7);
-        oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 1);
+        // Show confetti
+        throwConfetti();
         
-        // Volume envelope
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
-        
-        oscillator.type = 'sawtooth';
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 1.2);
-    };
-    
-    // Play the sound
-    playRoosterCrow();
-    
-    // Show text
-    setTimeout(() => {
-        chickenWelcome.innerHTML = '<div style="font-size: 2rem; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); text-align: center;">🐓<br>KUKURUYUUUK!</div>';
-    }, 200);
-    
-    // Remove after animation
-    setTimeout(() => {
-        chickenWelcome.remove();
-    }, 2000);
+        // Remove overlay after animation
+        setTimeout(() => {
+            welcomeOverlay.style.animation = 'fadeOut 0.5s';
+            setTimeout(() => welcomeOverlay.remove(), 500);
+        }, 2000);
+    });
 }
 
-// Add CSS animation for chicken crow
+// Add CSS animations
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes chickenCrow {
-        0% {
-            transform: translate(-50%, -50%) scale(0) rotate(0deg);
-            opacity: 0;
-        }
-        50% {
-            transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
-            opacity: 1;
-        }
-        100% {
-            transform: translate(-50%, -50%) scale(1) rotate(0deg);
-            opacity: 0;
-        }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    @keyframes bounceIn {
+        0% { transform: scale(0); opacity: 0; }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(-5deg); }
+        50% { transform: rotate(5deg); }
+    }
+    @keyframes chickenJump {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        30% { transform: translateY(-50px) rotate(-10deg); }
+        70% { transform: translateY(-30px) rotate(10deg); }
     }
 `;
 document.head.appendChild(style);
