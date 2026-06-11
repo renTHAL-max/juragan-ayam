@@ -16,12 +16,20 @@
       "dest": "/server.js"
     },
     {
+      "src": "/login.html",
+      "dest": "/public/login.html"
+    },
+    {
+      "src": "/admin.html",
+      "dest": "/public/admin.html"
+    },
+    {
       "src": "/(.*\\.(html|css|js|png|jpg|jpeg|gif|svg|ico|json))",
       "dest": "/public/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/public/index.html"
     }
   ]
 }

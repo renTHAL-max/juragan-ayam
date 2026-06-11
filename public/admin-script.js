@@ -53,7 +53,45 @@ document.addEventListener('DOMContentLoaded', () => {
     
     loadData();
     setInterval(loadData, 30000); // Refresh every 30 seconds
+    
+    // Mobile menu toggle
+    initMobileMenu();
 });
+
+// Mobile menu functionality
+function initMobileMenu() {
+    const menuBtn = document.querySelector('.btn-menu');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    
+    if (!menuBtn) {
+        // Create menu button if not exists
+        const header = document.querySelector('.header');
+        if (header) {
+            const btn = document.createElement('button');
+            btn.className = 'btn-menu';
+            btn.innerHTML = '<i class="fas fa-bars"></i>';
+            btn.onclick = toggleSidebar;
+            header.querySelector('.header-left').prepend(btn);
+        }
+    } else {
+        menuBtn.addEventListener('click', toggleSidebar);
+    }
+    
+    // Close sidebar when clicking outside on mobile
+    if (mainContent) {
+        mainContent.addEventListener('click', () => {
+            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+    }
+}
+
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('active');
+}
 
 // Load All Data
 async function loadData() {
