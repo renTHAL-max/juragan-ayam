@@ -47,10 +47,92 @@ document.addEventListener('DOMContentLoaded', () => {
     checkoutForm = document.getElementById('checkoutForm');
     categoryBtns = document.querySelectorAll('.category-btn');
     
+    // Play chicken sound on page load
+    playChickenSound();
+    
     loadProducts();
     loadCart();
     setupEventListeners();
 });
+
+// Play Chicken "Kukuruyuk" Sound
+function playChickenSound() {
+    // Show chicken animation with sound
+    const chickenWelcome = document.createElement('div');
+    chickenWelcome.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 8rem;
+        z-index: 10000;
+        animation: chickenCrow 2s ease-out;
+        pointer-events: none;
+    `;
+    chickenWelcome.textContent = '🐓';
+    document.body.appendChild(chickenWelcome);
+    
+    // Play rooster sound using Web Audio API
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Create rooster crow sound
+    const playRoosterCrow = () => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Rooster crow frequency pattern
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+        oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+        oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.5);
+        oscillator.frequency.exponentialRampToValueAtTime(700, audioContext.currentTime + 0.7);
+        oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 1);
+        
+        // Volume envelope
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
+        
+        oscillator.type = 'sawtooth';
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 1.2);
+    };
+    
+    // Play the sound
+    playRoosterCrow();
+    
+    // Show text
+    setTimeout(() => {
+        chickenWelcome.innerHTML = '<div style="font-size: 2rem; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); text-align: center;">🐓<br>KUKURUYUUUK!</div>';
+    }, 200);
+    
+    // Remove after animation
+    setTimeout(() => {
+        chickenWelcome.remove();
+    }, 2000);
+}
+
+// Add CSS animation for chicken crow
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes chickenCrow {
+        0% {
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            opacity: 0;
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
 
 // Setup Event Listeners
 function setupEventListeners() {
