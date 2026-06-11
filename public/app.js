@@ -790,17 +790,22 @@ function showPromotionalAd() {
     const promo = promos[Math.floor(Math.random() * promos.length)];
     
     const ad = document.createElement('div');
+    const isMobile = window.innerWidth <= 768;
+    
     ad.style.cssText = `
         position: fixed;
-        left: 20px;
-        top: 150px;
+        left: ${isMobile ? '50%' : '20px'};
+        top: ${isMobile ? 'auto' : '150px'};
+        bottom: ${isMobile ? '80px' : 'auto'};
+        ${isMobile ? 'transform: translateX(-50%);' : ''}
         background: ${promo.color};
-        padding: 1.5rem;
-        border-radius: 20px;
+        padding: ${isMobile ? '1rem' : '1.5rem'};
+        border-radius: ${isMobile ? '15px' : '20px'};
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         z-index: 1000;
-        animation: slideInLeft 0.5s, bounce 2s ease-in-out infinite;
-        max-width: 350px;
+        animation: ${isMobile ? 'bounceIn 0.5s' : 'slideInLeft 0.5s, bounce 2s ease-in-out infinite'};
+        max-width: ${isMobile ? '85%' : '350px'};
+        width: ${isMobile ? '85%' : 'auto'};
         color: white;
         cursor: pointer;
         transition: all 0.3s;
@@ -816,57 +821,59 @@ function showPromotionalAd() {
                 background: rgba(0,0,0,0.5);
                 color: white;
                 border: none;
-                width: 30px;
-                height: 30px;
+                width: ${isMobile ? '28px' : '30px'};
+                height: ${isMobile ? '28px' : '30px'};
                 border-radius: 50%;
                 cursor: pointer;
-                font-size: 1.2rem;
+                font-size: ${isMobile ? '1rem' : '1.2rem'};
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 transition: all 0.3s;
+                z-index: 10;
             " onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0)'">×</button>
             
             <div style="text-align: center;">
                 <div style="
-                    font-size: 5rem;
-                    margin-bottom: 0.5rem;
+                    font-size: ${isMobile ? '3rem' : '5rem'};
+                    margin-bottom: ${isMobile ? '0.3rem' : '0.5rem'};
                     animation: rotateScale 2s infinite;
                     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
                 ">${promo.emoji}</div>
                 
                 <h3 style="
-                    font-size: 1.5rem;
-                    margin-bottom: 0.5rem;
+                    font-size: ${isMobile ? '1.1rem' : '1.5rem'};
+                    margin-bottom: ${isMobile ? '0.3rem' : '0.5rem'};
                     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
                     animation: glow 2s ease-in-out infinite;
                 ">${promo.title}</h3>
                 
                 <div style="
-                    font-size: 1.8rem;
+                    font-size: ${isMobile ? '1.3rem' : '1.8rem'};
                     font-weight: bold;
-                    margin-bottom: 0.3rem;
+                    margin-bottom: ${isMobile ? '0.2rem' : '0.3rem'};
                     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
                 ">${promo.message}</div>
                 
                 <p style="
-                    font-size: 0.95rem;
+                    font-size: ${isMobile ? '0.8rem' : '0.95rem'};
                     opacity: 0.95;
-                    margin-bottom: 1rem;
+                    margin-bottom: ${isMobile ? '0.8rem' : '1rem'};
                 ">${promo.subtitle}</p>
                 
                 <button style="
                     background: white;
                     color: #2d3436;
                     border: none;
-                    padding: 0.8rem 2rem;
+                    padding: ${isMobile ? '0.6rem 1.5rem' : '0.8rem 2rem'};
                     border-radius: 50px;
                     font-weight: bold;
-                    font-size: 1rem;
+                    font-size: ${isMobile ? '0.85rem' : '1rem'};
                     cursor: pointer;
                     transition: all 0.3s;
                     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
                     animation: pulse 2s infinite;
+                    width: ${isMobile ? '100%' : 'auto'};
                 " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${promo.action} 🚀</button>
             </div>
         </div>
