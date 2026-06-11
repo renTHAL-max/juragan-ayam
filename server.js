@@ -15,7 +15,7 @@ app.use(express.static('public'));
 let products = [
     {
         id: 1,
-        name: "Ayam Kentucky Original",
+        name: "Juragan Ayam Original",
         description: "Ayam kentucky dengan bumbu original yang gurih dan renyah",
         price: 25000,
         image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&h=400&fit=crop&q=80",
@@ -24,7 +24,7 @@ let products = [
     },
     {
         id: 2,
-        name: "Ayam Kentucky Spicy",
+        name: "Juragan Ayam Spicy",
         description: "Ayam kentucky pedas dengan sensasi yang menggigit",
         price: 27000,
         image: "https://h2omart.com.au/wp-content/uploads/2023/12/fried1.jpg",
@@ -33,7 +33,7 @@ let products = [
     },
     {
         id: 3,
-        name: "Ayam Kentucky Crispy",
+        name: "Juragan Ayam Crispy",
         description: "Extra crispy dengan lapisan tepung yang super renyah",
         price: 28000,
         image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=500&h=400&fit=crop&q=80",
@@ -51,7 +51,7 @@ let products = [
     },
     {
         id: 5,
-        name: "Ayam Kentucky Cheese",
+        name: "Juragan Ayam Keju",
         description: "Ayam kentucky dengan taburan keju mozarella",
         price: 30000,
         image: "https://www.dapurkobe.co.id/wp-content/uploads/ayam-geprek-keju.jpg",
