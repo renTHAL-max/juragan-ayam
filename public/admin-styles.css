@@ -151,11 +151,29 @@ body {
 
 .btn-menu {
     display: none;
-    background: none;
+    background: var(--primary-color);
+    color: white;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--dark-color);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    z-index: 1001;
+}
+
+.btn-menu:hover {
+    background: var(--secondary-color);
+    transform: scale(1.1);
+}
+
+.btn-menu:active {
+    transform: scale(0.95);
 }
 
 .header h1 {
@@ -542,11 +560,24 @@ body {
     .sidebar {
         transform: translateX(-100%);
         box-shadow: none;
+        z-index: 2000;
     }
     
     .sidebar.active {
         transform: translateX(0);
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Overlay when sidebar is open */
+    .sidebar.active::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 100%;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
     }
     
     .main-content {
@@ -555,12 +586,16 @@ body {
     }
     
     .btn-menu {
-        display: block !important;
+        display: flex !important;
     }
     
     .header {
         padding: 1rem;
         margin-bottom: 1rem;
+    }
+    
+    .header-left {
+        gap: 1rem;
     }
     
     .header h1 {

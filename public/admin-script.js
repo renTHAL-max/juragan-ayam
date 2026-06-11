@@ -319,11 +319,6 @@ function showSection(section) {
     document.getElementById('pageTitle').textContent = titles[section];
 }
 
-// Toggle Sidebar (Mobile)
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('active');
-}
-
 // Product Modal Functions
 function showAddProductModal() {
     document.getElementById('modalTitle').textContent = 'Tambah Produk';
