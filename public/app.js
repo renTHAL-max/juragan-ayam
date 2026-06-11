@@ -17,7 +17,7 @@ const API_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:3000/api' 
     : '/api';
 
-// DOM Elements - will be initialized after DOM loads
+// DOM Elements - initialized after DOM loads
 let productsGrid;
 let cartBtn;
 let cartModal;
@@ -33,9 +33,6 @@ let categoryBtns;
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('App initializing...');
-    console.log('API URL:', API_URL);
-    
     // Initialize DOM elements
     productsGrid = document.getElementById('productsGrid');
     cartBtn = document.getElementById('cartBtn');
@@ -50,18 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     checkoutForm = document.getElementById('checkoutForm');
     categoryBtns = document.querySelectorAll('.category-btn');
     
-    console.log('Products Grid:', productsGrid);
-    
-    if (!productsGrid) {
-        console.error('ERROR: productsGrid element not found! Check HTML.');
-        return;
-    }
-    
     loadProducts();
     loadCart();
     setupEventListeners();
-    
-    console.log('App initialized');
 });
 
 // Setup Event Listeners
@@ -113,46 +101,28 @@ function setupEventListeners() {
 // Load Products from API
 async function loadProducts() {
     try {
-        console.log('Loading products from:', `${API_URL}/products`);
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
-        
-        console.log('Products loaded:', data);
         
         if (data.success) {
             products = data.data;
             displayProducts(products);
-        } else {
-            console.error('Failed to load products:', data);
-            productsGrid.innerHTML = '<p class="error" style="text-align: center; padding: 2rem; color: #d63031;">Gagal memuat produk. Coba refresh halaman.</p>';
         }
     } catch (error) {
         console.error('Error loading products:', error);
-        productsGrid.innerHTML = '<p class="error" style="text-align: center; padding: 2rem; color: #d63031;">Terjadi kesalahan. Pastikan koneksi internet Anda stabil dan coba refresh halaman.</p>';
+        productsGrid.innerHTML = '<p class="error">Gagal memuat produk. Pastikan server berjalan.</p>';
     }
 }
 
 // Display Products
 function displayProducts(productsToShow) {
-    console.log('Displaying products:', productsToShow);
-    
-    if (!productsGrid) {
-        console.error('Products grid element not found!');
-        return;
-    }
-    
     productsGrid.innerHTML = '';
-    
-    if (!productsToShow || productsToShow.length === 0) {
-        productsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: #636e72;">Tidak ada produk tersedia.</p>';
-        return;
-    }
     
     productsToShow.forEach(product => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         productCard.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/400x300?text=Juragan+Ayam'">
+            <img src="${product.image}" alt="${product.name}" class="product-image">
             <div class="product-info">
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-description">${product.description}</p>
@@ -169,8 +139,6 @@ function displayProducts(productsToShow) {
         `;
         productsGrid.appendChild(productCard);
     });
-    
-    console.log('Products displayed successfully');
 }
 
 // Filter Products by Category
@@ -651,13 +619,6 @@ function chickenRain() {
 
 // 3. LIVE STATS COUNTER
 function initLiveStats() {
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Don't show live stats on mobile to avoid clutter
-        return;
-    }
-    
     const statsDiv = document.createElement('div');
     statsDiv.id = 'live-stats';
     statsDiv.style.cssText = `
@@ -789,13 +750,6 @@ function showLoadingChicken() {
 
 // 6. PROMOTIONAL ADS - Iklan Menarik Pop-up
 function showPromotionalAd() {
-    const isMobile = window.innerWidth <= 768;
-    
-    // On mobile, show ads less frequently
-    if (isMobile && Math.random() > 0.5) {
-        return; // 50% chance to skip on mobile
-    }
-    
     const promos = [
         {
             title: '🔥 FLASH SALE!',
@@ -850,89 +804,84 @@ function showPromotionalAd() {
     const promo = promos[Math.floor(Math.random() * promos.length)];
     
     const ad = document.createElement('div');
-    const isMobile = window.innerWidth <= 768;
-    
     ad.style.cssText = `
         position: fixed;
-        left: ${isMobile ? '50%' : '20px'};
-        top: ${isMobile ? 'auto' : '150px'};
-        bottom: ${isMobile ? '70px' : 'auto'};
-        ${isMobile ? 'transform: translateX(-50%);' : ''}
+        left: 20px;
+        top: 150px;
         background: ${promo.color};
-        padding: ${isMobile ? '0.8rem' : '1.5rem'};
-        border-radius: ${isMobile ? '12px' : '20px'};
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         z-index: 1000;
-        animation: ${isMobile ? 'bounceIn 0.5s' : 'slideInLeft 0.5s'};
-        max-width: ${isMobile ? '280px' : '350px'};
-        width: ${isMobile ? '280px' : 'auto'};
+        animation: slideInLeft 0.5s, bounce 2s ease-in-out infinite;
+        max-width: 350px;
         color: white;
         cursor: pointer;
         transition: all 0.3s;
-        border: 2px solid rgba(255,255,255,0.3);
+        border: 3px solid rgba(255,255,255,0.3);
     `;
     
     ad.innerHTML = `
         <div style="position: relative;">
             <button onclick="event.stopPropagation(); this.closest('div').parentElement.remove()" style="
                 position: absolute;
-                top: -8px;
-                right: -8px;
-                background: rgba(0,0,0,0.7);
+                top: -10px;
+                right: -10px;
+                background: rgba(0,0,0,0.5);
                 color: white;
                 border: none;
-                width: ${isMobile ? '24px' : '28px'};
-                height: ${isMobile ? '24px' : '28px'};
+                width: 30px;
+                height: 30px;
                 border-radius: 50%;
                 cursor: pointer;
-                font-size: ${isMobile ? '0.9rem' : '1rem'};
+                font-size: 1.2rem;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 transition: all 0.3s;
-                z-index: 10;
-            ">×</button>
+            " onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0)'">×</button>
             
             <div style="text-align: center;">
                 <div style="
-                    font-size: ${isMobile ? '2.5rem' : '5rem'};
-                    margin-bottom: ${isMobile ? '0.2rem' : '0.5rem'};
-                    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+                    font-size: 5rem;
+                    margin-bottom: 0.5rem;
+                    animation: rotateScale 2s infinite;
+                    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
                 ">${promo.emoji}</div>
                 
                 <h3 style="
-                    font-size: ${isMobile ? '0.95rem' : '1.5rem'};
-                    margin-bottom: ${isMobile ? '0.2rem' : '0.5rem'};
-                    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                    font-size: 1.5rem;
+                    margin-bottom: 0.5rem;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                    animation: glow 2s ease-in-out infinite;
                 ">${promo.title}</h3>
                 
                 <div style="
-                    font-size: ${isMobile ? '1.1rem' : '1.8rem'};
+                    font-size: 1.8rem;
                     font-weight: bold;
-                    margin-bottom: ${isMobile ? '0.2rem' : '0.3rem'};
-                    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+                    margin-bottom: 0.3rem;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
                 ">${promo.message}</div>
                 
                 <p style="
-                    font-size: ${isMobile ? '0.7rem' : '0.95rem'};
+                    font-size: 0.95rem;
                     opacity: 0.95;
-                    margin-bottom: ${isMobile ? '0.6rem' : '1rem'};
-                    line-height: 1.3;
+                    margin-bottom: 1rem;
                 ">${promo.subtitle}</p>
                 
                 <button style="
                     background: white;
                     color: #2d3436;
                     border: none;
-                    padding: ${isMobile ? '0.5rem 1rem' : '0.8rem 2rem'};
+                    padding: 0.8rem 2rem;
                     border-radius: 50px;
                     font-weight: bold;
-                    font-size: ${isMobile ? '0.75rem' : '1rem'};
+                    font-size: 1rem;
                     cursor: pointer;
                     transition: all 0.3s;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                    width: 100%;
-                ">${promo.action} 🚀</button>
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    animation: pulse 2s infinite;
+                " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${promo.action} 🚀</button>
             </div>
         </div>
     `;
@@ -1051,13 +1000,6 @@ function initProductHoverEffects() {
 
 // 11. PROMO BANNER ANIMATED
 function initPromoBanner() {
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Simpler banner for mobile
-        return; // Skip promo banner on mobile to reduce clutter
-    }
-    
     const banner = document.createElement('div');
     banner.style.cssText = `
         position: fixed;
@@ -1131,13 +1073,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // SALES TICKER - Running Text Penjualan
 function initSalesTicker() {
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // Don't show sales ticker on mobile
-        return;
-    }
-    
     const ticker = document.createElement('div');
     ticker.id = 'sales-ticker';
     ticker.style.cssText = `
