@@ -871,11 +871,27 @@ body {
     .categories {
         top: 100px;
         padding: 1rem 0;
+        position: sticky;
+        display: block !important;
+    }
+    
+    .categories .container {
+        display: flex !important;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .categories .container::-webkit-scrollbar {
+        display: none;
     }
     
     .category-btn {
         padding: 0.6rem 1.2rem;
         font-size: 0.85rem;
+        flex-shrink: 0;
+        white-space: nowrap;
     }
     
     /* Products Mobile */
