@@ -33,9 +33,15 @@ const categoryBtns = document.querySelectorAll('.category-btn');
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('App initializing...');
+    console.log('API URL:', API_URL);
+    console.log('Products Grid:', productsGrid);
+    
     loadProducts();
     loadCart();
     setupEventListeners();
+    
+    console.log('App initialized');
 });
 
 // Setup Event Listeners
@@ -87,28 +93,46 @@ function setupEventListeners() {
 // Load Products from API
 async function loadProducts() {
     try {
+        console.log('Loading products from:', `${API_URL}/products`);
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
+        
+        console.log('Products loaded:', data);
         
         if (data.success) {
             products = data.data;
             displayProducts(products);
+        } else {
+            console.error('Failed to load products:', data);
+            productsGrid.innerHTML = '<p class="error" style="text-align: center; padding: 2rem; color: #d63031;">Gagal memuat produk. Coba refresh halaman.</p>';
         }
     } catch (error) {
         console.error('Error loading products:', error);
-        productsGrid.innerHTML = '<p class="error">Gagal memuat produk. Pastikan server berjalan.</p>';
+        productsGrid.innerHTML = '<p class="error" style="text-align: center; padding: 2rem; color: #d63031;">Terjadi kesalahan. Pastikan koneksi internet Anda stabil dan coba refresh halaman.</p>';
     }
 }
 
 // Display Products
 function displayProducts(productsToShow) {
+    console.log('Displaying products:', productsToShow);
+    
+    if (!productsGrid) {
+        console.error('Products grid element not found!');
+        return;
+    }
+    
     productsGrid.innerHTML = '';
+    
+    if (!productsToShow || productsToShow.length === 0) {
+        productsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: #636e72;">Tidak ada produk tersedia.</p>';
+        return;
+    }
     
     productsToShow.forEach(product => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         productCard.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image">
+            <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/400x300?text=Juragan+Ayam'">
             <div class="product-info">
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-description">${product.description}</p>
@@ -125,6 +149,8 @@ function displayProducts(productsToShow) {
         `;
         productsGrid.appendChild(productCard);
     });
+    
+    console.log('Products displayed successfully');
 }
 
 // Filter Products by Category
