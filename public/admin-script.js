@@ -996,3 +996,114 @@ setTimeout(() => {
     // Motivational quote every 5 minutes
     setInterval(showMotivationalQuote, 300000);
 }, 2000);
+
+
+// ========== SETTINGS FUNCTIONS ==========
+
+// Load Settings
+async function loadSettings() {
+    try {
+        const response = await fetch(`${API_URL}/settings`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const settings = data.data;
+            document.getElementById('storeName').value = settings.storeName;
+            document.getElementById('address').value = settings.address;
+            document.getElementById('phone').value = settings.phone;
+            document.getElementById('email').value = settings.email;
+            document.getElementById('whatsapp').value = settings.whatsapp || '';
+            document.getElementById('instagram').value = settings.instagram || '';
+            document.getElementById('operatingHours').value = settings.operatingHours || '';
+        }
+    } catch (error) {
+        console.error('Error loading settings:', error);
+    }
+}
+
+// Save Settings
+document.getElementById('settingsForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const settingsData = {
+        storeName: document.getElementById('storeName').value,
+        address: document.getElementById('address').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        instagram: document.getElementById('instagram').value,
+        operatingHours: document.getElementById('operatingHours').value
+    };
+    
+    try {
+        const response = await fetch(`${API_URL}/settings`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settingsData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showFunnySuccessNotification('🎉 Settings Updated!', 'Pengaturan berhasil disimpan! Website customer juga ikutan update loh! 🔥');
+            throwConfetti();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        alert('Gagal menyimpan pengaturan');
+    }
+});
+
+// Funny Success Notification
+function showFunnySuccessNotification(title, message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        z-index: 9999;
+        text-align: center;
+        min-width: 350px;
+        animation: bounceIn 0.5s forwards;
+    `;
+    notification.innerHTML = `
+        <div style="font-size: 4rem; margin-bottom: 1rem; animation: wiggle 0.5s infinite;">💾</div>
+        <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">${title}</h2>
+        <p style="color: #636e72; line-height: 1.6;">${message}</p>
+        <button onclick="this.parentElement.remove()" style="
+            margin-top: 1rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        ">Mantap! 👍</button>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s';
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
+}
+
+// Load settings when showing settings section
+const originalShowSection = showSection;
+showSection = function(section) {
+    originalShowSection(section);
+    if (section === 'settings') {
+        loadSettings();
+    }
+};

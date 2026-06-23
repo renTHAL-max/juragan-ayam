@@ -71,6 +71,17 @@ let products = [
 
 let orders = [];
 
+// Settings data (untuk Vercel serverless)
+let settings = {
+    storeName: "Juragan Ayam",
+    address: "Jl. Ayam Goreng Raya No. 123, Jakarta",
+    phone: "+62 812-3456-7890",
+    email: "info@juraganayam.com",
+    whatsapp: "+62 812-3456-7890",
+    instagram: "@juraganayam",
+    operatingHours: "Senin - Minggu: 10:00 - 22:00"
+};
+
 // API Routes
 
 // GET semua produk
@@ -207,6 +218,38 @@ app.delete('/api/orders/:orderNumber', (req, res) => {
         res.json({ 
             success: true, 
             message: 'Pesanan berhasil dihapus'
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// GET settings
+app.get('/api/settings', (req, res) => {
+    try {
+        res.json({ success: true, data: settings });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// UPDATE settings
+app.put('/api/settings', (req, res) => {
+    try {
+        const { storeName, address, phone, email, whatsapp, instagram, operatingHours } = req.body;
+        
+        if (storeName) settings.storeName = storeName;
+        if (address) settings.address = address;
+        if (phone) settings.phone = phone;
+        if (email) settings.email = email;
+        if (whatsapp) settings.whatsapp = whatsapp;
+        if (instagram) settings.instagram = instagram;
+        if (operatingHours) settings.operatingHours = operatingHours;
+        
+        res.json({ 
+            success: true, 
+            message: 'Pengaturan berhasil diupdate',
+            data: settings
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

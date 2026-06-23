@@ -1201,3 +1201,54 @@ function initSalesTicker() {
 
 // Initialize sales ticker
 setTimeout(() => initSalesTicker(), 3000);
+
+
+// ========== LOAD SETTINGS FUNCTION ==========
+let storeSettings = {};
+
+async function loadSettings() {
+    try {
+        const response = await fetch(`${API_URL}/settings`);
+        const data = await response.json();
+        
+        if (data.success) {
+            storeSettings = data.data;
+            updateSettingsOnPage();
+        }
+    } catch (error) {
+        console.error('Error loading settings:', error);
+    }
+}
+
+function updateSettingsOnPage() {
+    // Update contact info in footer
+    const addressElement = document.querySelector('.contact-item p');
+    if (addressElement && addressElement.textContent.includes('Jl.')) {
+        addressElement.textContent = storeSettings.address;
+    }
+    
+    const phoneElements = document.querySelectorAll('.contact-item p');
+    phoneElements.forEach(el => {
+        if (el.textContent.includes('+62')) {
+            el.textContent = storeSettings.phone;
+        }
+        if (el.textContent.includes('@')) {
+            el.textContent = storeSettings.email;
+        }
+    });
+    
+    // Update hero title if needed
+    const heroTitle = document.querySelector('.hero-title span');
+    if (heroTitle) {
+        heroTitle.textContent = storeSettings.storeName;
+    }
+    
+    // Update about section title
+    const aboutTitle = document.querySelector('.about-text h3');
+    if (aboutTitle && aboutTitle.textContent.includes('Juragan Ayam')) {
+        aboutTitle.textContent = `${storeSettings.storeName} - Raja Ayam Goreng`;
+    }
+}
+
+// Load settings when page loads
+loadSettings();
