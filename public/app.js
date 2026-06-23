@@ -577,7 +577,7 @@ async function handleCheckout(e) {
                         <strong>Metode Pembayaran:</strong><br>
                         ${paymentMethodText}
                     </div>
-                    ${paymentMethodText === 'Cash (Tunai)' ? `
+                    ${paymentMethodText.includes('Cash') || paymentMethodText.includes('Tunai') ? `
                     <div style="
                         background: #d1f7e5;
                         border-left: 4px solid #00b894;
@@ -613,7 +613,7 @@ async function handleCheckout(e) {
                         line-height: 1.6;
                     ">
                         Terima kasih telah berbelanja di <strong style="color: #ff6b35;">Juragan Ayam</strong>! 🐔<br>
-                        ${paymentMethodText === 'Cash (Tunai)' 
+                        ${paymentMethodText.includes('Cash') || paymentMethodText.includes('Tunai')
                             ? 'Pesanan Anda sedang diproses dan akan segera diantar! Siapkan uang tunainya ya! 💰' 
                             : 'Jangan lupa bayar dulu ya! Setelah dibayar, admin akan konfirmasi dan pesanan langsung diproses! 🔥'}
                     </p>

@@ -139,8 +139,10 @@ app.post('/api/orders', (req, res) => {
 
         // Simpan order
         // Tentukan status order berdasarkan metode pembayaran
-        const orderStatus = paymentMethod === 'Cash' ? 'pending' : 'pending_payment';
-        const paymentStatus = paymentMethod === 'Cash' ? 'confirmed' : 'waiting_confirmation';
+        // Check if payment method contains "Cash" or "Tunai"
+        const isCashPayment = paymentMethod.includes('Cash') || paymentMethod.includes('Tunai');
+        const orderStatus = isCashPayment ? 'pending' : 'pending_payment';
+        const paymentStatus = isCashPayment ? 'confirmed' : 'waiting_confirmation';
         
         const newOrder = {
             id: orders.length + 1,
@@ -160,8 +162,8 @@ app.post('/api/orders', (req, res) => {
 
         res.json({ 
             success: true, 
-            message: paymentMethod === 'Cash' 
-                ? 'Pesanan berhasil dibuat! Tunggu pengiriman ya! 🚚' 
+            message: isCashPayment 
+                ? 'Pesanan berhasil dibuat! Siap diantar! 🚚' 
                 : 'Pesanan berhasil dibuat! Silakan lakukan pembayaran dan tunggu konfirmasi admin. 💳',
             data: newOrder 
         });
