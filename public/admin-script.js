@@ -165,39 +165,35 @@ function displayOrders() {
     if (!table) return;
     
     table.innerHTML = orders.map(order => {
-        // Determine status badge and text
-        let statusBadge = '';
+        // Determine status badge text based on order status
+        let statusText = '';
         let statusClass = '';
         
         if (order.status === 'completed') {
-            statusBadge = '✅ Selesai';
+            statusText = 'completed';
             statusClass = 'completed';
         } else if (order.status === 'pending_payment') {
-            statusBadge = '⏳ Menunggu Pembayaran';
+            statusText = 'pending_payment';
             statusClass = 'pending_payment';
         } else {
-            statusBadge = '📦 Diproses';
+            statusText = 'pending';
             statusClass = 'pending';
-        }
-        
-        // Payment status badge
-        let paymentBadge = '';
-        if (order.paymentStatus === 'waiting_confirmation') {
-            paymentBadge = '<span style="background: #f39c12; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">💳 Belum Bayar</span>';
-        } else if (order.paymentStatus === 'confirmed') {
-            paymentBadge = '<span style="background: #27ae60; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">✅ Lunas</span>';
         }
         
         return `
         <tr>
             <td><strong>${order.orderNumber}</strong></td>
             <td>${order.customerName}</td>
-            <td>${order.phone}</td>
-            <td><strong>Rp ${order.total.toLocaleString('id-ID')}</strong></td>
-            <td>${order.paymentMethod || 'N/A'}${paymentBadge}</td>
+            <td colspan="2"><strong>Rp ${order.total.toLocaleString('id-ID')}</strong></td>
             <td>
-                <span class="status-badge status-${statusClass}">
-                    ${statusBadge}
+                <span class="status-badge status-${statusClass}" style="
+                    padding: 0.5rem 1rem;
+                    border-radius: 50px;
+                    font-weight: 500;
+                    font-size: 0.9rem;
+                    display: inline-block;
+                ">
+                    ${statusText}
                 </span>
             </td>
             <td>
@@ -205,12 +201,12 @@ function displayOrders() {
                     <button class="btn-icon btn-view" onclick="viewOrder('${order.orderNumber}')" title="Detail">
                         <i class="fas fa-eye"></i>
                     </button>
-                    ${order.paymentStatus === 'waiting_confirmation' ? `
+                    ${order.status === 'pending_payment' ? `
                     <button class="btn-icon btn-edit" onclick="confirmPayment('${order.orderNumber}')" title="Konfirmasi Pembayaran" style="background: #27ae60;">
                         <i class="fas fa-money-bill-wave"></i>
                     </button>
                     ` : ''}
-                    ${order.status === 'pending' && order.paymentStatus === 'confirmed' ? `
+                    ${order.status === 'pending' ? `
                     <button class="btn-icon btn-edit" onclick="completeOrder('${order.orderNumber}')" title="Selesaikan">
                         <i class="fas fa-check"></i>
                     </button>
