@@ -1252,23 +1252,7 @@ async function loadSettings() {
 }
 
 function updateSettingsOnPage() {
-    // Update contact info in footer
-    const addressElement = document.querySelector('.contact-item p');
-    if (addressElement && addressElement.textContent.includes('Jl.')) {
-        addressElement.textContent = storeSettings.address;
-    }
-    
-    const phoneElements = document.querySelectorAll('.contact-item p');
-    phoneElements.forEach(el => {
-        if (el.textContent.includes('+62')) {
-            el.textContent = storeSettings.phone;
-        }
-        if (el.textContent.includes('@')) {
-            el.textContent = storeSettings.email;
-        }
-    });
-    
-    // Update hero title if needed
+    // Update hero title (store name)
     const heroTitle = document.querySelector('.hero-title span');
     if (heroTitle) {
         heroTitle.textContent = storeSettings.storeName;
@@ -1276,9 +1260,35 @@ function updateSettingsOnPage() {
     
     // Update about section title
     const aboutTitle = document.querySelector('.about-text h3');
-    if (aboutTitle && aboutTitle.textContent.includes('Juragan Ayam')) {
+    if (aboutTitle) {
         aboutTitle.textContent = `${storeSettings.storeName} - Raja Ayam Goreng`;
     }
+    
+    // Update contact info in footer
+    const contactItems = document.querySelectorAll('.contact-item');
+    contactItems.forEach(item => {
+        const icon = item.querySelector('i');
+        const text = item.querySelector('p');
+        
+        if (!icon || !text) return;
+        
+        // Address
+        if (icon.classList.contains('fa-map-marker-alt')) {
+            text.textContent = storeSettings.address;
+        }
+        
+        // Phone
+        if (icon.classList.contains('fa-phone')) {
+            text.textContent = storeSettings.phone;
+        }
+        
+        // Email
+        if (icon.classList.contains('fa-envelope')) {
+            text.textContent = storeSettings.email;
+        }
+    });
+    
+    console.log('✅ Settings updated on page:', storeSettings);
 }
 
 // Load settings when page loads
