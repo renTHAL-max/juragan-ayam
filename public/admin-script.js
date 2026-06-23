@@ -164,16 +164,40 @@ function displayOrders() {
     const table = document.getElementById('ordersTable');
     if (!table) return;
     
-    table.innerHTML = orders.map(order => `
+    table.innerHTML = orders.map(order => {
+        // Determine status badge and text
+        let statusBadge = '';
+        let statusClass = '';
+        
+        if (order.status === 'completed') {
+            statusBadge = '✅ Selesai';
+            statusClass = 'completed';
+        } else if (order.status === 'pending_payment') {
+            statusBadge = '⏳ Menunggu Pembayaran';
+            statusClass = 'pending_payment';
+        } else {
+            statusBadge = '📦 Diproses';
+            statusClass = 'pending';
+        }
+        
+        // Payment status badge
+        let paymentBadge = '';
+        if (order.paymentStatus === 'waiting_confirmation') {
+            paymentBadge = '<span style="background: #f39c12; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">💳 Belum Bayar</span>';
+        } else if (order.paymentStatus === 'confirmed') {
+            paymentBadge = '<span style="background: #27ae60; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">✅ Lunas</span>';
+        }
+        
+        return `
         <tr>
             <td><strong>${order.orderNumber}</strong></td>
             <td>${order.customerName}</td>
             <td>${order.phone}</td>
             <td><strong>Rp ${order.total.toLocaleString('id-ID')}</strong></td>
-            <td>${order.paymentMethod || 'N/A'}</td>
+            <td>${order.paymentMethod || 'N/A'}${paymentBadge}</td>
             <td>
-                <span class="status-badge status-${order.status}">
-                    ${order.status === 'pending' ? '⏳ Pending' : '✅ Selesai'}
+                <span class="status-badge status-${statusClass}">
+                    ${statusBadge}
                 </span>
             </td>
             <td>
@@ -181,7 +205,12 @@ function displayOrders() {
                     <button class="btn-icon btn-view" onclick="viewOrder('${order.orderNumber}')" title="Detail">
                         <i class="fas fa-eye"></i>
                     </button>
-                    ${order.status === 'pending' ? `
+                    ${order.paymentStatus === 'waiting_confirmation' ? `
+                    <button class="btn-icon btn-edit" onclick="confirmPayment('${order.orderNumber}')" title="Konfirmasi Pembayaran" style="background: #27ae60;">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </button>
+                    ` : ''}
+                    ${order.status === 'pending' && order.paymentStatus === 'confirmed' ? `
                     <button class="btn-icon btn-edit" onclick="completeOrder('${order.orderNumber}')" title="Selesaikan">
                         <i class="fas fa-check"></i>
                     </button>
@@ -192,7 +221,8 @@ function displayOrders() {
                 </div>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Update Dashboard Stats
@@ -395,6 +425,30 @@ function viewOrder(orderNumber) {
     const order = orders.find(o => o.orderNumber === orderNumber);
     if (!order) return;
     
+    // Determine status text
+    let orderStatusText = '';
+    let orderStatusColor = '';
+    if (order.status === 'completed') {
+        orderStatusText = '✅ Selesai';
+        orderStatusColor = '#27ae60';
+    } else if (order.status === 'pending_payment') {
+        orderStatusText = '⏳ Menunggu Pembayaran';
+        orderStatusColor = '#f39c12';
+    } else {
+        orderStatusText = '📦 Diproses';
+        orderStatusColor = '#3498db';
+    }
+    
+    let paymentStatusText = '';
+    let paymentStatusColor = '';
+    if (order.paymentStatus === 'waiting_confirmation') {
+        paymentStatusText = '💳 Belum Bayar';
+        paymentStatusColor = '#e74c3c';
+    } else if (order.paymentStatus === 'confirmed') {
+        paymentStatusText = '✅ Lunas';
+        paymentStatusColor = '#27ae60';
+    }
+    
     const detail = document.getElementById('orderDetail');
     detail.innerHTML = `
         <div style="padding: 1.5rem;">
@@ -404,7 +458,8 @@ function viewOrder(orderNumber) {
                 <strong>Telepon:</strong> ${order.phone}<br>
                 <strong>Alamat:</strong> ${order.address}<br>
                 <strong>Metode Pembayaran:</strong> ${order.paymentMethod || 'N/A'}<br>
-                <strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span>
+                <strong>Status Pesanan:</strong> <span style="background: ${orderStatusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.9rem;">${orderStatusText}</span><br>
+                <strong>Status Pembayaran:</strong> <span style="background: ${paymentStatusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.9rem;">${paymentStatusText}</span>
             </div>
             <h4>Item Pesanan:</h4>
             <div style="margin: 1rem 0;">
@@ -418,6 +473,12 @@ function viewOrder(orderNumber) {
             <div style="text-align: right; font-size: 1.2rem; margin-top: 1rem;">
                 <strong>Total: Rp ${order.total.toLocaleString('id-ID')}</strong>
             </div>
+            ${order.paymentStatus === 'waiting_confirmation' ? `
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #fff3cd; border-radius: 8px; border-left: 4px solid #f39c12;">
+                <strong style="color: #856404;">⚠️ Menunggu Konfirmasi Pembayaran</strong><br>
+                <small style="color: #856404;">Customer belum membayar atau belum dikonfirmasi</small>
+            </div>
+            ` : ''}
         </div>
     `;
     
@@ -455,6 +516,37 @@ function completeOrder(orderNumber) {
             .catch(error => {
                 console.error('Error:', error);
                 alert('Gagal update status pesanan');
+            });
+        }
+    );
+}
+
+function confirmPayment(orderNumber) {
+    showFunnyConfirm(
+        '💰 Konfirmasi Pembayaran?',
+        'Pembayaran customer udah masuk? Transfer/E-wallet/QRIS nya udah cek? 🤑<br><small style="color: #27ae60;">Setelah konfirmasi, pesanan akan diproses!</small>',
+        () => {
+            fetch(`${API_URL}/orders/${orderNumber}/confirm-payment`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    throwConfetti();
+                    playSuccessAnimation();
+                    showNotification('💸 CUAN MASUK! Pembayaran dikonfirmasi! Siap proses pesanan! 🔥');
+                    loadOrders();
+                    updateDashboard();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal konfirmasi pembayaran');
             });
         }
     );

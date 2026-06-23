@@ -577,6 +577,21 @@ async function handleCheckout(e) {
                         <strong>Metode Pembayaran:</strong><br>
                         ${paymentMethodText}
                     </div>
+                    ${paymentMethodText !== 'Cash (Tunai)' ? `
+                    <div style="
+                        background: #fff3cd;
+                        border-left: 4px solid #f39c12;
+                        padding: 1rem;
+                        border-radius: 10px;
+                        margin-bottom: 1rem;
+                        text-align: left;
+                        color: #856404;
+                    ">
+                        <strong>⚠️ Penting!</strong><br>
+                        <small>Silakan lakukan pembayaran dan tunggu konfirmasi dari admin.<br>
+                        Pesanan akan diproses setelah pembayaran dikonfirmasi! 💳</small>
+                    </div>
+                    ` : ''}
                     <p style="
                         color: #636e72;
                         font-size: 1.1rem;
@@ -584,7 +599,9 @@ async function handleCheckout(e) {
                         line-height: 1.6;
                     ">
                         Terima kasih telah berbelanja di <strong style="color: #ff6b35;">Juragan Ayam</strong>! 🐔<br>
-                        Pesanan Anda sedang diproses dan akan segera diantar!
+                        ${paymentMethodText === 'Cash (Tunai)' 
+                            ? 'Pesanan Anda sedang diproses dan akan segera diantar!' 
+                            : 'Jangan lupa bayar dulu ya! Setelah dibayar, admin akan konfirmasi dan pesanan langsung diproses! 🔥'}
                     </p>
                     <button onclick="this.closest('div').parentElement.remove()" style="
                         background: linear-gradient(135deg, #ff6b35, #f7931e);

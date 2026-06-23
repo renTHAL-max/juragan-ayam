@@ -138,6 +138,10 @@ app.post('/api/orders', (req, res) => {
         }
 
         // Simpan order
+        // Tentukan status order berdasarkan metode pembayaran
+        const orderStatus = paymentMethod === 'Cash' ? 'pending' : 'pending_payment';
+        const paymentStatus = paymentMethod === 'Cash' ? 'confirmed' : 'waiting_confirmation';
+        
         const newOrder = {
             id: orders.length + 1,
             orderNumber: `ORD${Date.now()}`,
@@ -147,7 +151,8 @@ app.post('/api/orders', (req, res) => {
             paymentMethod,
             items,
             total,
-            status: 'pending',
+            status: orderStatus,
+            paymentStatus: paymentStatus,
             createdAt: new Date().toISOString()
         };
 
@@ -155,7 +160,9 @@ app.post('/api/orders', (req, res) => {
 
         res.json({ 
             success: true, 
-            message: 'Pesanan berhasil dibuat', 
+            message: paymentMethod === 'Cash' 
+                ? 'Pesanan berhasil dibuat! Tunggu pengiriman ya! 🚚' 
+                : 'Pesanan berhasil dibuat! Silakan lakukan pembayaran dan tunggu konfirmasi admin. 💳',
             data: newOrder 
         });
     } catch (error) {
@@ -193,6 +200,35 @@ app.put('/api/orders/:orderNumber/status', (req, res) => {
         res.json({ 
             success: true, 
             message: 'Status pesanan berhasil diupdate',
+            data: orders[orderIndex]
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// CONFIRM payment (admin)
+app.put('/api/orders/:orderNumber/confirm-payment', (req, res) => {
+    try {
+        const { orderNumber } = req.params;
+        
+        const orderIndex = orders.findIndex(o => o.orderNumber === orderNumber);
+        
+        if (orderIndex === -1) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Pesanan tidak ditemukan' 
+            });
+        }
+        
+        // Update payment status to confirmed and order status to pending
+        orders[orderIndex].paymentStatus = 'confirmed';
+        orders[orderIndex].status = 'pending'; // Now ready for delivery
+        orders[orderIndex].paymentConfirmedAt = new Date().toISOString();
+        
+        res.json({ 
+            success: true, 
+            message: 'Pembayaran berhasil dikonfirmasi! Pesanan siap diproses! 💰',
             data: orders[orderIndex]
         });
     } catch (error) {
