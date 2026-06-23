@@ -577,7 +577,21 @@ async function handleCheckout(e) {
                         <strong>Metode Pembayaran:</strong><br>
                         ${paymentMethodText}
                     </div>
-                    ${paymentMethodText !== 'Cash (Tunai)' ? `
+                    ${paymentMethodText === 'Cash (Tunai)' ? `
+                    <div style="
+                        background: #d1f7e5;
+                        border-left: 4px solid #00b894;
+                        padding: 1rem;
+                        border-radius: 10px;
+                        margin-bottom: 1rem;
+                        text-align: left;
+                        color: #00694a;
+                    ">
+                        <strong>💵 Cash on Delivery (COD)</strong><br>
+                        <small>Pesanan akan diantar ke alamat Anda.<br>
+                        Bayar tunai saat ayam sampai! 🚚</small>
+                    </div>
+                    ` : `
                     <div style="
                         background: #fff3cd;
                         border-left: 4px solid #f39c12;
@@ -591,7 +605,7 @@ async function handleCheckout(e) {
                         <small>Silakan lakukan pembayaran dan tunggu konfirmasi dari admin.<br>
                         Pesanan akan diproses setelah pembayaran dikonfirmasi! 💳</small>
                     </div>
-                    ` : ''}
+                    `}
                     <p style="
                         color: #636e72;
                         font-size: 1.1rem;
@@ -600,7 +614,7 @@ async function handleCheckout(e) {
                     ">
                         Terima kasih telah berbelanja di <strong style="color: #ff6b35;">Juragan Ayam</strong>! 🐔<br>
                         ${paymentMethodText === 'Cash (Tunai)' 
-                            ? 'Pesanan Anda sedang diproses dan akan segera diantar!' 
+                            ? 'Pesanan Anda sedang diproses dan akan segera diantar! Siapkan uang tunainya ya! 💰' 
                             : 'Jangan lupa bayar dulu ya! Setelah dibayar, admin akan konfirmasi dan pesanan langsung diproses! 🔥'}
                     </p>
                     <button onclick="this.closest('div').parentElement.remove()" style="
