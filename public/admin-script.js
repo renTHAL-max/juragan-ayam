@@ -887,8 +887,8 @@ function changeMood() {
 // 7. RANDOM FUN FACTS
 const funFacts = [
     "🐔 Fun fact: Ayam bisa lari 14 km/jam! Tapi tetep kalah ama grab bike 😂",
-    "🍗 Woi! KFC pertama buka tahun 1952! Udah lama banget cuy!",
-    "💡 Kentucky itu dari Amerika, bukan dari Jakarta! 🤯",
+    "🍗 Woi! Juragan Ayam udah terkenal kemana-mana cuy!",
+    "💡 Fun fact: Resep rahasia kami turun temurun! 🤯",
     "🎯 Orang Indonesia doyan banget ayam goreng! Pantes laku!",
     "⭐ Ayam adalah unggas terpopuler! Kalah ama artis sih 😅",
     "🌍 Ada 25 miliar ayam di dunia! Lebih banyak dari manusia!",

@@ -16,7 +16,7 @@ let products = [
     {
         id: 1,
         name: "Juragan Ayam Original",
-        description: "Ayam kentucky dengan bumbu original yang gurih dan renyah",
+        description: "Ayam goreng dengan bumbu original yang gurih dan renyah",
         price: 25000,
         image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&h=400&fit=crop&q=80",
         category: "original",
@@ -25,7 +25,7 @@ let products = [
     {
         id: 2,
         name: "Juragan Ayam Spicy",
-        description: "Ayam kentucky pedas dengan sensasi yang menggigit",
+        description: "Ayam goreng pedas dengan sensasi yang menggigit",
         price: 27000,
         image: "https://h2omart.com.au/wp-content/uploads/2023/12/fried1.jpg",
         category: "spicy",
@@ -43,7 +43,7 @@ let products = [
     {
         id: 4,
         name: "Paket Hemat 5 Potong",
-        description: "Paket hemat berisi 5 potong ayam kentucky pilihan",
+        description: "Paket hemat berisi 5 potong ayam goreng pilihan",
         price: 115000,
         image: "https://statik.tempo.co/data/2024/01/09/id_1269783/1269783_720.jpg",
         category: "paket",
@@ -52,7 +52,7 @@ let products = [
     {
         id: 5,
         name: "Juragan Ayam Keju",
-        description: "Ayam kentucky dengan taburan keju mozarella",
+        description: "Ayam goreng dengan taburan keju mozarella",
         price: 30000,
         image: "https://www.dapurkobe.co.id/wp-content/uploads/ayam-geprek-keju.jpg",
         category: "special",
