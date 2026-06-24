@@ -1279,5 +1279,23 @@ function updateSettingsOnPage() {
     console.log('✅ Settings updated on page:', storeSettings);
 }
 
+// WhatsApp click handler
+document.addEventListener('DOMContentLoaded', () => {
+    const whatsappContact = document.getElementById('whatsapp-contact');
+    if (whatsappContact) {
+        whatsappContact.addEventListener('click', () => {
+            // Get phone number from the element
+            const phoneText = whatsappContact.querySelector('p').textContent;
+            // Remove all non-digit characters except +
+            const cleanPhone = phoneText.replace(/[^\d+]/g, '');
+            // Convert +62 to 62 for WhatsApp format
+            const waPhone = cleanPhone.replace(/^\+/, '');
+            // Open WhatsApp with the phone number
+            const waMessage = encodeURIComponent('Halo, saya ingin pesan ayam dari Juragan Ayam! 🍗');
+            window.open(`https://wa.me/${waPhone}?text=${waMessage}`, '_blank');
+        });
+    }
+});
+
 // Load settings when page loads
 loadSettings();
