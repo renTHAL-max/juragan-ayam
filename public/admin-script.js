@@ -1096,13 +1096,9 @@ async function loadSettings() {
         
         if (data.success) {
             const settings = data.data;
-            document.getElementById('storeName').value = settings.storeName;
             document.getElementById('address').value = settings.address;
             document.getElementById('phone').value = settings.phone;
             document.getElementById('email').value = settings.email;
-            document.getElementById('whatsapp').value = settings.whatsapp || '';
-            document.getElementById('instagram').value = settings.instagram || '';
-            document.getElementById('operatingHours').value = settings.operatingHours || '';
         }
     } catch (error) {
         console.error('Error loading settings:', error);
@@ -1114,13 +1110,9 @@ document.getElementById('settingsForm')?.addEventListener('submit', async (e) =>
     e.preventDefault();
     
     const settingsData = {
-        storeName: document.getElementById('storeName').value,
         address: document.getElementById('address').value,
         phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        whatsapp: document.getElementById('whatsapp').value,
-        instagram: document.getElementById('instagram').value,
-        operatingHours: document.getElementById('operatingHours').value
+        email: document.getElementById('email').value
     };
     
     try {

@@ -1252,18 +1252,6 @@ async function loadSettings() {
 }
 
 function updateSettingsOnPage() {
-    // Update hero title (store name)
-    const heroTitle = document.querySelector('.hero-title span');
-    if (heroTitle) {
-        heroTitle.textContent = storeSettings.storeName;
-    }
-    
-    // Update about section title
-    const aboutTitle = document.querySelector('.about-text h3');
-    if (aboutTitle) {
-        aboutTitle.textContent = `${storeSettings.storeName} - Raja Ayam Goreng`;
-    }
-    
     // Update contact info in footer
     const contactItems = document.querySelectorAll('.contact-item');
     contactItems.forEach(item => {
