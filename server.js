@@ -298,9 +298,12 @@ app.get('/api/settings', (req, res) => {
 // UPDATE settings
 app.put('/api/settings', (req, res) => {
     try {
+        console.log('📝 Update settings request:', req.body);
+        
         const { address, phone, email } = req.body;
         
         if (!address || !phone || !email) {
+            console.log('❌ Validation failed: missing fields');
             return res.status(400).json({ 
                 success: false, 
                 message: 'Alamat, Telepon, dan Email harus diisi!' 
@@ -312,7 +315,13 @@ app.put('/api/settings', (req, res) => {
         settings.email = email;
         
         // Save to file for persistence
-        writeJsonFile('settings.json', settings);
+        try {
+            writeJsonFile('settings.json', settings);
+            console.log('✅ Settings saved to file:', settings);
+        } catch (fileError) {
+            console.error('❌ File write error:', fileError);
+            throw fileError;
+        }
         
         res.json({ 
             success: true, 
@@ -320,6 +329,7 @@ app.put('/api/settings', (req, res) => {
             data: settings
         });
     } catch (error) {
+        console.error('❌ Server error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
