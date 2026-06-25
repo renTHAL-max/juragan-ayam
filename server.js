@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,6 +11,26 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+// Data directory
+const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// Helper functions for file operations
+const readJsonFile = (filename) => {
+    const filepath = path.join(DATA_DIR, filename);
+    if (fs.existsSync(filepath)) {
+        return JSON.parse(fs.readFileSync(filepath, 'utf8'));
+    }
+    return null;
+};
+
+const writeJsonFile = (filename, data) => {
+    const filepath = path.join(DATA_DIR, filename);
+    fs.writeFileSync(filepath, JSON.stringify(data, null, 2), 'utf8');
+};
 
 // In-memory data storage (untuk Vercel serverless)
 let products = [
@@ -71,12 +92,19 @@ let products = [
 
 let orders = [];
 
-// Settings data (untuk Vercel serverless)
-let settings = {
+// Settings data - load from file or use default
+const defaultSettings = {
     address: "Jl. Ayam Goreng Raya No. 123, Jakarta",
     phone: "+62 812-3456-7890",
     email: "info@juraganayam.com"
 };
+
+let settings = readJsonFile('settings.json') || defaultSettings;
+
+// Save default settings if file doesn't exist
+if (!readJsonFile('settings.json')) {
+    writeJsonFile('settings.json', settings);
+}
 
 // API Routes
 
@@ -282,6 +310,9 @@ app.put('/api/settings', (req, res) => {
         settings.address = address;
         settings.phone = phone;
         settings.email = email;
+        
+        // Save to file for persistence
+        writeJsonFile('settings.json', settings);
         
         res.json({ 
             success: true, 
