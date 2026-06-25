@@ -46,7 +46,7 @@ let products = [
         name: "Juragan Ayam Original",
         description: "Ayam goreng dengan bumbu original yang gurih dan renyah",
         price: 25000,
-        image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&h=400&fit=crop&q=80",
+        image: "https://i.imgur.com/2mZhAGX.png",
         category: "original",
         stock: 50
     },
