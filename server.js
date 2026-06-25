@@ -55,7 +55,7 @@ let products = [
         name: "Juragan Ayam Spicy",
         description: "Ayam goreng pedas dengan sensasi yang menggigit",
         price: 27000,
-        image: "https://i.imgur.com/2mZhAGX.png",
+        image: "https://i.imgur.com/j7lpj9k.png",
         category: "spicy",
         stock: 45
     },
