@@ -55,7 +55,7 @@ let products = [
         name: "Juragan Ayam Spicy",
         description: "Ayam goreng pedas dengan sensasi yang menggigit",
         price: 27000,
-        image: "https://h2omart.com.au/wp-content/uploads/2023/12/fried1.jpg",
+        image: "https://i.imgur.com/2mZhAGX.png",
         category: "spicy",
         stock: 45
     },
