@@ -12,14 +12,19 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Data directory
+// Data directory (only for local development)
 const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) {
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+
+// Only create data directory in local development
+if (!isProduction && !fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// Helper functions for file operations
+// Helper functions for file operations (only works locally)
 const readJsonFile = (filename) => {
+    if (isProduction) return null; // Skip file read in production
+    
     const filepath = path.join(DATA_DIR, filename);
     if (fs.existsSync(filepath)) {
         return JSON.parse(fs.readFileSync(filepath, 'utf8'));
@@ -28,6 +33,8 @@ const readJsonFile = (filename) => {
 };
 
 const writeJsonFile = (filename, data) => {
+    if (isProduction) return; // Skip file write in production
+    
     const filepath = path.join(DATA_DIR, filename);
     fs.writeFileSync(filepath, JSON.stringify(data, null, 2), 'utf8');
 };
@@ -92,7 +99,7 @@ let products = [
 
 let orders = [];
 
-// Settings data - load from file or use default
+// Settings data - load from file (local) or use default (production)
 const defaultSettings = {
     address: "Jl. Ayam Goreng Raya No. 123, Jakarta",
     phone: "+62 812-3456-7890",
@@ -101,10 +108,14 @@ const defaultSettings = {
 
 let settings = readJsonFile('settings.json') || defaultSettings;
 
-// Save default settings if file doesn't exist
-if (!readJsonFile('settings.json')) {
+// Save default settings if file doesn't exist (local only)
+if (!isProduction && !readJsonFile('settings.json')) {
     writeJsonFile('settings.json', settings);
+    console.log('📁 Created default settings.json file');
 }
+
+console.log(`🌍 Environment: ${isProduction ? 'PRODUCTION (Vercel)' : 'LOCAL DEVELOPMENT'}`);
+console.log('⚙️ Settings:', settings);
 
 // API Routes
 
@@ -314,23 +325,30 @@ app.put('/api/settings', (req, res) => {
         settings.phone = phone;
         settings.email = email;
         
-        // Save to file for persistence
-        try {
-            writeJsonFile('settings.json', settings);
-            console.log('✅ Settings saved to file:', settings);
-        } catch (fileError) {
-            console.error('❌ File write error:', fileError);
-            throw fileError;
+        // Save to file for persistence (local only)
+        if (!isProduction) {
+            try {
+                writeJsonFile('settings.json', settings);
+                console.log('✅ Settings saved to file:', settings);
+            } catch (fileError) {
+                console.error('❌ File write error:', fileError);
+                // Don't throw - continue even if file write fails
+            }
+        } else {
+            console.log('⚠️ Production mode: settings stored in memory only');
         }
         
         res.json({ 
             success: true, 
-            message: 'Informasi kontak berhasil diupdate! 📞',
+            message: 'Informasi kontak berhasil diupdate! 📞' + (isProduction ? ' (Stored in memory - will reset on redeploy)' : ''),
             data: settings
         });
     } catch (error) {
         console.error('❌ Server error:', error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Terjadi kesalahan: ' + error.message 
+        });
     }
 });
 
