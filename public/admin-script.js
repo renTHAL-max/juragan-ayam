@@ -184,7 +184,9 @@ function displayOrders() {
         <tr>
             <td><strong>${order.orderNumber}</strong></td>
             <td>${order.customerName}</td>
-            <td colspan="2"><strong>Rp ${order.total.toLocaleString('id-ID')}</strong></td>
+            <td>${order.phone || 'N/A'}</td>
+            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${order.address || 'N/A'}">${order.address || 'N/A'}</td>
+            <td><strong>Rp ${order.total.toLocaleString('id-ID')}</strong></td>
             <td>
                 <span class="status-badge status-${statusClass}" style="
                     padding: 0.5rem 1rem;
@@ -386,16 +388,31 @@ function filterOrders(status) {
     const filteredOrders = status === 'all' ? orders : orders.filter(o => o.status === status);
     
     const table = document.getElementById('ordersTable');
-    table.innerHTML = filteredOrders.map(order => `
+    table.innerHTML = filteredOrders.map(order => {
+        let statusText = '';
+        let statusClass = '';
+        
+        if (order.status === 'completed') {
+            statusText = 'completed';
+            statusClass = 'completed';
+        } else if (order.status === 'pending_payment') {
+            statusText = 'pending_payment';
+            statusClass = 'pending_payment';
+        } else {
+            statusText = 'pending';
+            statusClass = 'pending';
+        }
+        
+        return `
         <tr>
             <td><strong>${order.orderNumber}</strong></td>
             <td>${order.customerName}</td>
-            <td>${order.phone}</td>
+            <td>${order.phone || 'N/A'}</td>
+            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${order.address || 'N/A'}">${order.address || 'N/A'}</td>
             <td><strong>Rp ${order.total.toLocaleString('id-ID')}</strong></td>
-            <td>${order.paymentMethod || 'N/A'}</td>
             <td>
-                <span class="status-badge status-${order.status}">
-                    ${order.status === 'pending' ? '⏳ Pending' : '✅ Selesai'}
+                <span class="status-badge status-${statusClass}">
+                    ${statusText}
                 </span>
             </td>
             <td>
@@ -403,6 +420,11 @@ function filterOrders(status) {
                     <button class="btn-icon btn-view" onclick="viewOrder('${order.orderNumber}')" title="Detail">
                         <i class="fas fa-eye"></i>
                     </button>
+                    ${order.status === 'pending_payment' ? `
+                    <button class="btn-icon btn-edit" onclick="confirmPayment('${order.orderNumber}')" title="Konfirmasi Pembayaran" style="background: #27ae60;">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </button>
+                    ` : ''}
                     ${order.status === 'pending' ? `
                     <button class="btn-icon btn-edit" onclick="completeOrder('${order.orderNumber}')" title="Selesaikan">
                         <i class="fas fa-check"></i>
@@ -414,7 +436,8 @@ function filterOrders(status) {
                 </div>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function viewOrder(orderNumber) {
