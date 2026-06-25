@@ -48,7 +48,13 @@ let products = [
         price: 25000,
         image: "https://i.imgur.com/2mZhAGX.png",
         category: "original",
-        stock: 50
+        stock: 50,
+        parts: {
+            paha: 15,
+            dada: 12,
+            sayap: 10,
+            paha_bawah: 13
+        }
     },
     {
         id: 2,
@@ -57,7 +63,13 @@ let products = [
         price: 27000,
         image: "https://i.imgur.com/j7lpj9k.png",
         category: "spicy",
-        stock: 45
+        stock: 45,
+        parts: {
+            paha: 12,
+            dada: 10,
+            sayap: 15,
+            paha_bawah: 8
+        }
     },
     {
         id: 3,
@@ -66,7 +78,13 @@ let products = [
         price: 28000,
         image: "https://i.imgur.com/qHB6l2S.png",
         category: "crispy",
-        stock: 40
+        stock: 40,
+        parts: {
+            paha: 10,
+            dada: 15,
+            sayap: 8,
+            paha_bawah: 7
+        }
     },
     {
         id: 4,
@@ -163,13 +181,31 @@ app.post('/api/orders', (req, res) => {
                     message: `Produk ${item.name} tidak ditemukan` 
                 });
             }
-            if (product.stock < item.quantity) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: `Stok ${product.name} tidak mencukupi` 
-                });
+            
+            // Check if item has part selection
+            if (item.part && product.parts) {
+                // Check part stock
+                if (!product.parts[item.part] || product.parts[item.part] < item.quantity) {
+                    return res.status(400).json({ 
+                        success: false, 
+                        message: `Stok ${item.partName} untuk ${product.name} tidak mencukupi` 
+                    });
+                }
+                // Reduce part stock
+                product.parts[item.part] -= item.quantity;
+                
+                // Also reduce total stock
+                product.stock -= item.quantity;
+            } else {
+                // Regular stock check for packages
+                if (product.stock < item.quantity) {
+                    return res.status(400).json({ 
+                        success: false, 
+                        message: `Stok ${product.name} tidak mencukupi` 
+                    });
+                }
+                product.stock -= item.quantity;
             }
-            product.stock -= item.quantity;
         }
 
         // Simpan order

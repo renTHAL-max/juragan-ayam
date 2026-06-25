@@ -240,7 +240,13 @@ function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product || product.stock === 0) return;
     
-    const existingItem = cart.find(item => item.id === productId);
+    // Check if product has parts selection (not package)
+    if (product.parts && !product.category.includes('paket')) {
+        showChickenPartModal(product);
+        return;
+    }
+    
+    const existingItem = cart.find(item => item.id === productId && !item.part);
     
     if (existingItem) {
         if (existingItem.quantity < product.stock) {
@@ -275,9 +281,237 @@ function addToCart(productId) {
     totalSoldToday++;
 }
 
+// Show Chicken Part Selection Modal
+function showChickenPartModal(product) {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'chickenPartModal';
+    modal.style.zIndex = '2500';
+    
+    const partsInfo = {
+        paha: { name: 'Paha Atas', icon: '🍗', desc: 'Juicy & empuk' },
+        dada: { name: 'Dada', icon: '🥩', desc: 'Daging banyak' },
+        sayap: { name: 'Sayap', icon: '🦅', desc: 'Crispy & gurih' },
+        paha_bawah: { name: 'Paha Bawah', icon: '🍖', desc: 'Praktis dimakan' }
+    };
+    
+    let partsHTML = '';
+    for (const [partKey, stock] of Object.entries(product.parts)) {
+        const partInfo = partsInfo[partKey];
+        const isAvailable = stock > 0;
+        partsHTML += `
+            <button class="part-btn ${!isAvailable ? 'disabled' : ''}" 
+                    onclick="addToCartWithPart(${product.id}, '${partKey}')" 
+                    ${!isAvailable ? 'disabled' : ''}>
+                <div class="part-icon">${partInfo.icon}</div>
+                <div class="part-name">${partInfo.name}</div>
+                <div class="part-desc">${partInfo.desc}</div>
+                <div class="part-stock ${!isAvailable ? 'stock-empty' : ''}">
+                    ${isAvailable ? `Stok: ${stock}` : 'Habis'}
+                </div>
+            </button>
+        `;
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px; animation: slideInUp 0.3s;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ff6b35, #f7931e); color: white; padding: 1.5rem; border-radius: 15px 15px 0 0;">
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 2rem;">🍗</span>
+                    Pilih Bagian Ayam
+                </h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">
+                    ${product.name} - Rp ${product.price.toLocaleString('id-ID')}
+                </p>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <div class="parts-grid">
+                    ${partsHTML}
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 1rem 1.5rem; border-top: 1px solid #e9ecef;">
+                <button onclick="closeChickenPartModal()" class="btn-secondary" style="
+                    background: #95a5a6;
+                    color: white;
+                    border: none;
+                    padding: 0.8rem 2rem;
+                    border-radius: 50px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    transition: all 0.3s;
+                ">Batal</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Add CSS for parts selection
+    if (!document.getElementById('partsModalStyle')) {
+        const style = document.createElement('style');
+        style.id = 'partsModalStyle';
+        style.textContent = `
+            .parts-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .part-btn {
+                background: white;
+                border: 3px solid #ff6b35;
+                border-radius: 15px;
+                padding: 1.5rem 1rem;
+                cursor: pointer;
+                transition: all 0.3s;
+                text-align: center;
+            }
+            
+            .part-btn:hover:not(.disabled) {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+                background: linear-gradient(135deg, #fff5f0, #ffe8dc);
+            }
+            
+            .part-btn.disabled {
+                background: #ecf0f1;
+                border-color: #bdc3c7;
+                cursor: not-allowed;
+                opacity: 0.5;
+            }
+            
+            .part-icon {
+                font-size: 3rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .part-name {
+                font-weight: bold;
+                color: #2d3436;
+                margin-bottom: 0.25rem;
+                font-size: 1rem;
+            }
+            
+            .part-desc {
+                font-size: 0.8rem;
+                color: #636e72;
+                margin-bottom: 0.5rem;
+            }
+            
+            .part-stock {
+                font-size: 0.85rem;
+                color: #27ae60;
+                font-weight: 600;
+            }
+            
+            .part-stock.stock-empty {
+                color: #e74c3c;
+            }
+            
+            @keyframes slideInUp {
+                from {
+                    transform: translateY(50px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            @media (max-width: 768px) {
+                .parts-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 0.8rem;
+                }
+                
+                .part-btn {
+                    padding: 1rem 0.5rem;
+                }
+                
+                .part-icon {
+                    font-size: 2.5rem;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Close Chicken Part Modal
+function closeChickenPartModal() {
+    const modal = document.getElementById('chickenPartModal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+// Add to Cart with specific part
+function addToCartWithPart(productId, part) {
+    const product = products.find(p => p.id === productId);
+    if (!product || product.parts[part] <= 0) {
+        alert('Bagian ini sudah habis!');
+        return;
+    }
+    
+    const partsInfo = {
+        paha: 'Paha Atas',
+        dada: 'Dada',
+        sayap: 'Sayap',
+        paha_bawah: 'Paha Bawah'
+    };
+    
+    // Check if same product and part already in cart
+    const existingItem = cart.find(item => item.id === productId && item.part === part);
+    
+    if (existingItem) {
+        if (existingItem.quantity < product.parts[part]) {
+            existingItem.quantity++;
+        } else {
+            alert('Stok bagian ini tidak mencukupi!');
+            return;
+        }
+    } else {
+        cart.push({
+            ...product,
+            part: part,
+            partName: partsInfo[part],
+            quantity: 1,
+            displayName: `${product.name} - ${partsInfo[part]}`
+        });
+    }
+    
+    saveCart();
+    updateCartUI();
+    closeChickenPartModal();
+    
+    // Play sound and show animation
+    sounds.click.play();
+    playRandomChickenSound();
+    
+    // Cart button animation
+    const cartBtn = document.getElementById('cartBtn');
+    cartBtn.classList.add('added');
+    setTimeout(() => cartBtn.classList.remove('added'), 500);
+    
+    showNotification(`🐔 ${partsInfo[part]} ditambahkan ke keranjang!`);
+    
+    // Random increase viewers
+    currentViewers++;
+    totalSoldToday++;
+}
+
 // Update Cart Quantity
-function updateCartQuantity(productId, change) {
-    const item = cart.find(item => item.id === productId);
+function updateCartQuantity(productId, change, part = null) {
+    let item;
+    if (part) {
+        item = cart.find(item => item.id === productId && item.part === part);
+    } else {
+        item = cart.find(item => item.id === productId && !item.part);
+    }
+    
     const product = products.find(p => p.id === productId);
     
     if (!item) return;
@@ -285,12 +519,14 @@ function updateCartQuantity(productId, change) {
     item.quantity += change;
     
     if (item.quantity <= 0) {
-        removeFromCart(productId);
+        removeFromCart(productId, part);
         return;
     }
     
-    if (item.quantity > product.stock) {
-        item.quantity = product.stock;
+    // Check stock limit
+    const maxStock = item.part ? product.parts[item.part] : product.stock;
+    if (item.quantity > maxStock) {
+        item.quantity = maxStock;
         alert('Stok tidak mencukupi!');
     }
     
@@ -299,8 +535,12 @@ function updateCartQuantity(productId, change) {
 }
 
 // Remove from Cart
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+function removeFromCart(productId, part = null) {
+    if (part) {
+        cart = cart.filter(item => !(item.id === productId && item.part === part));
+    } else {
+        cart = cart.filter(item => !(item.id === productId && !item.part));
+    }
     saveCart();
     updateCartUI();
 }
@@ -324,15 +564,18 @@ function updateCartUI() {
         <div class="cart-item">
             <img src="${item.image}" alt="${item.name}" class="cart-item-image">
             <div class="cart-item-info">
-                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-name">
+                    ${item.displayName || item.name}
+                    ${item.part ? `<br><small style="color: #ff6b35; font-weight: 600;">🍗 ${item.partName}</small>` : ''}
+                </div>
                 <div class="cart-item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
                 <div class="cart-item-quantity">
-                    <button class="qty-btn" onclick="updateCartQuantity(${item.id}, -1)">-</button>
+                    <button class="qty-btn" onclick="updateCartQuantity(${item.id}, -1, ${item.part ? `'${item.part}'` : 'null'})">-</button>
                     <span>${item.quantity}</span>
-                    <button class="qty-btn" onclick="updateCartQuantity(${item.id}, 1)">+</button>
+                    <button class="qty-btn" onclick="updateCartQuantity(${item.id}, 1, ${item.part ? `'${item.part}'` : 'null'})">+</button>
                 </div>
             </div>
-            <button class="remove-btn" onclick="removeFromCart(${item.id})">
+            <button class="remove-btn" onclick="removeFromCart(${item.id}, ${item.part ? `'${item.part}'` : 'null'})">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
@@ -463,7 +706,9 @@ function openCheckoutModal() {
     const checkoutItems = document.getElementById('checkoutItems');
     checkoutItems.innerHTML = cart.map(item => `
         <div class="checkout-item">
-            <span>${item.name} x ${item.quantity}</span>
+            <span>
+                ${item.displayName || item.name}${item.part ? ` (${item.partName})` : ''} x ${item.quantity}
+            </span>
             <span>Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span>
         </div>
     `).join('');
@@ -493,7 +738,9 @@ async function handleCheckout(e) {
         paymentMethod: paymentMethodText,
         items: cart.map(item => ({
             id: item.id,
-            name: item.name,
+            name: item.displayName || item.name,
+            part: item.part || null,
+            partName: item.partName || null,
             price: item.price,
             quantity: item.quantity
         })),
