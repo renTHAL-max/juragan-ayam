@@ -64,7 +64,7 @@ let products = [
         name: "Juragan Ayam Crispy",
         description: "Extra crispy dengan lapisan tepung yang super renyah",
         price: 28000,
-        image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=500&h=400&fit=crop&q=80",
+        image: "https://i.imgur.com/qHB6l2S.png",
         category: "crispy",
         stock: 40
     },
