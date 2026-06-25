@@ -1291,7 +1291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Convert +62 to 62 for WhatsApp format
             const waPhone = cleanPhone.replace(/^\+/, '');
             // Open WhatsApp with the phone number
-            const waMessage = encodeURIComponent('Halo, saya ingin pesan ayam dari Juragan Ayam! 🍗');
+            const waMessage = encodeURIComponent('halo saya ada kendala,bisa bantu?');
             window.open(`https://wa.me/${waPhone}?text=${waMessage}`, '_blank');
         });
     }
